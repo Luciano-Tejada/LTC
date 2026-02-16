@@ -1,10 +1,422 @@
-<form id="quizForm">
-  <p>
-    <label for="question1">¿Cuál es la capital de Francia?</label><br>
-    <input type="text" id="question1" name="question1">
-  </p>
-  <p>
-    <input type="button" value="Comprobar respuesta" onclick="checkAnswers()">
-  </p>
-  <p id="result"></p>
-</form>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tutorial: Quiz Interactivo con HTML, CSS y JavaScript</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f4f8;
+      color: #333;
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 750px;
+      margin: 0 auto;
+    }
+
+    /* --- Encabezado --- */
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      color: #2c3e50;
+    }
+
+    header p {
+      color: #666;
+      margin-top: 5px;
+    }
+
+    /* --- Secciones del tutorial --- */
+    .tutorial-section {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .tutorial-section h2 {
+      font-size: 1.25rem;
+      color: #2980b9;
+      margin-bottom: 10px;
+      border-bottom: 2px solid #eef2f7;
+      padding-bottom: 8px;
+    }
+
+    .tutorial-section p {
+      margin-bottom: 10px;
+    }
+
+    /* --- Bloques de codigo --- */
+    pre {
+      background: #2c3e50;
+      color: #ecf0f1;
+      padding: 15px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.9rem;
+      margin: 10px 0;
+    }
+
+    code {
+      font-family: 'Courier New', monospace;
+    }
+
+    .inline-code {
+      background: #e8edf2;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      color: #c0392b;
+    }
+
+    /* --- Quiz --- */
+    #quizForm {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px 25px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+
+    #quizForm h2 {
+      font-size: 1.25rem;
+      color: #27ae60;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #eef2f7;
+      padding-bottom: 8px;
+    }
+
+    .question {
+      margin-bottom: 18px;
+    }
+
+    .question label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .question input[type="text"] {
+      width: 100%;
+      padding: 8px 12px;
+      border: 2px solid #dce1e8;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .question input[type="text"]:focus {
+      outline: none;
+      border-color: #2980b9;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 24px;
+      background-color: #2980b9;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #1f6da0;
+    }
+
+    .btn-reset {
+      background-color: #7f8c8d;
+      margin-left: 10px;
+    }
+
+    .btn-reset:hover {
+      background-color: #636e72;
+    }
+
+    #result {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 6px;
+      font-weight: 600;
+      display: none;
+    }
+
+    #result.success {
+      background-color: #d4edda;
+      color: #155724;
+      display: block;
+    }
+
+    #result.partial {
+      background-color: #fff3cd;
+      color: #856404;
+      display: block;
+    }
+
+    #result.fail {
+      background-color: #f8d7da;
+      color: #721c24;
+      display: block;
+    }
+
+    .feedback {
+      font-size: 0.85rem;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .feedback.correct {
+      color: #27ae60;
+    }
+
+    .feedback.incorrect {
+      color: #e74c3c;
+    }
+
+    /* --- Footer --- */
+    footer {
+      text-align: center;
+      color: #999;
+      font-size: 0.85rem;
+      margin-top: 10px;
+      padding-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ==================== ENCABEZADO ==================== -->
+  <header>
+    <h1>Tutorial: Quiz Interactivo</h1>
+    <p>Aprende a crear un quiz con HTML, CSS y JavaScript paso a paso.</p>
+  </header>
+
+  <!-- ==================== PASO 1: HTML ==================== -->
+  <section class="tutorial-section">
+    <h2>Paso 1 &mdash; Estructura HTML</h2>
+    <p>
+      Primero definimos el formulario con las preguntas. Cada pregunta usa un
+      <span class="inline-code">&lt;label&gt;</span> y un
+      <span class="inline-code">&lt;input&gt;</span> de texto.
+    </p>
+    <pre><code>&lt;form id="quizForm"&gt;
+  &lt;div class="question"&gt;
+    &lt;label&gt;1. &iquest;Cu&aacute;l es la capital de Francia?&lt;/label&gt;
+    &lt;input type="text" id="q1"&gt;
+  &lt;/div&gt;
+
+  &lt;button type="button" onclick="checkAnswers()"&gt;
+    Comprobar
+  &lt;/button&gt;
+&lt;/form&gt;
+
+&lt;p id="result"&gt;&lt;/p&gt;</code></pre>
+    <p>
+      El atributo <span class="inline-code">onclick</span> conecta el
+      bot&oacute;n con la funci&oacute;n JavaScript que evaluar&aacute; las respuestas.
+    </p>
+  </section>
+
+  <!-- ==================== PASO 2: CSS ==================== -->
+  <section class="tutorial-section">
+    <h2>Paso 2 &mdash; Estilos CSS</h2>
+    <p>
+      Usamos CSS para dar estilo al formulario: bordes redondeados, colores
+      claros y transiciones al enfocar los campos.
+    </p>
+    <pre><code>.question input[type="text"] {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid #dce1e8;
+  border-radius: 6px;
+  transition: border-color 0.3s;
+}
+
+.question input[type="text"]:focus {
+  border-color: #2980b9;
+}</code></pre>
+    <p>
+      La clase <span class="inline-code">.feedback</span> muestra texto verde
+      o rojo seg&uacute;n si la respuesta es correcta o no.
+    </p>
+  </section>
+
+  <!-- ==================== PASO 3: JavaScript ==================== -->
+  <section class="tutorial-section">
+    <h2>Paso 3 &mdash; L&oacute;gica JavaScript</h2>
+    <p>
+      La funci&oacute;n <span class="inline-code">checkAnswers()</span> recorre
+      un arreglo de respuestas correctas, compara con lo que el usuario
+      escribi&oacute; y muestra retroalimentaci&oacute;n.
+    </p>
+    <pre><code>const answers = {
+  q1: "paris",
+  q2: "oxigeno",
+  q3: "7"
+};
+
+function checkAnswers() {
+  let score = 0;
+  const total = Object.keys(answers).length;
+
+  for (const [id, correct] of Object.entries(answers)) {
+    const input = document.getElementById(id);
+    const value = input.value.trim().toLowerCase();
+
+    if (value === correct) {
+      score++;
+      // mostrar feedback positivo
+    } else {
+      // mostrar feedback negativo
+    }
+  }
+
+  // mostrar resultado final
+}</code></pre>
+    <p>
+      Usamos <span class="inline-code">trim()</span> y
+      <span class="inline-code">toLowerCase()</span> para que la
+      comparaci&oacute;n no dependa de may&uacute;sculas o espacios extra.
+    </p>
+  </section>
+
+  <!-- ==================== QUIZ EN VIVO ==================== -->
+  <form id="quizForm" onsubmit="return false;">
+    <h2>Prueba el Quiz</h2>
+
+    <div class="question">
+      <label for="q1">1. &iquest;Cu&aacute;l es la capital de Francia?</label>
+      <input type="text" id="q1" name="q1" placeholder="Escribe tu respuesta...">
+      <div class="feedback" id="fb1"></div>
+    </div>
+
+    <div class="question">
+      <label for="q2">2. &iquest;Qu&eacute; gas necesitamos para respirar?</label>
+      <input type="text" id="q2" name="q2" placeholder="Escribe tu respuesta...">
+      <div class="feedback" id="fb2"></div>
+    </div>
+
+    <div class="question">
+      <label for="q3">3. &iquest;Cu&aacute;ntos d&iacute;as tiene una semana?</label>
+      <input type="text" id="q3" name="q3" placeholder="Escribe tu respuesta...">
+      <div class="feedback" id="fb3"></div>
+    </div>
+
+    <div class="question">
+      <label for="q4">4. &iquest;En qu&eacute; continente est&aacute; Brasil?</label>
+      <input type="text" id="q4" name="q4" placeholder="Escribe tu respuesta...">
+      <div class="feedback" id="fb4"></div>
+    </div>
+
+    <div class="question">
+      <label for="q5">5. &iquest;Cu&aacute;nto es 5 + 3?</label>
+      <input type="text" id="q5" name="q5" placeholder="Escribe tu respuesta...">
+      <div class="feedback" id="fb5"></div>
+    </div>
+
+    <button type="button" class="btn" onclick="checkAnswers()">Comprobar respuestas</button>
+    <button type="button" class="btn btn-reset" onclick="resetQuiz()">Reiniciar</button>
+
+    <div id="result"></div>
+  </form>
+
+  <footer>
+    <p>Tutorial creado con HTML, CSS y JavaScript &mdash; LTC</p>
+  </footer>
+
+</div>
+
+<script>
+  // Respuestas correctas (en minusculas y sin tildes para simplificar)
+  const answers = {
+    q1: "paris",
+    q2: "oxigeno",
+    q3: "7",
+    q4: "america",
+    q5: "8"
+  };
+
+  // Variantes aceptadas para respuestas con tilde o forma alternativa
+  const alternates = {
+    q1: ["parís"],
+    q2: ["oxígeno"],
+    q4: ["américa", "sudamerica", "sudamérica", "america del sur", "américa del sur"]
+  };
+
+  function normalize(str) {
+    return str.trim().toLowerCase();
+  }
+
+  function checkAnswers() {
+    let score = 0;
+    const total = Object.keys(answers).length;
+
+    for (const [id, correct] of Object.entries(answers)) {
+      const input = document.getElementById(id);
+      const fb = document.getElementById("fb" + id.slice(1));
+      const value = normalize(input.value);
+
+      const validAnswers = [correct, ...(alternates[id] || [])];
+      const isCorrect = validAnswers.some(ans => value === ans);
+
+      if (isCorrect) {
+        score++;
+        fb.textContent = "Correcto";
+        fb.className = "feedback correct";
+        input.style.borderColor = "#27ae60";
+      } else {
+        fb.textContent = "Incorrecto — la respuesta es: " + correct.charAt(0).toUpperCase() + correct.slice(1);
+        fb.className = "feedback incorrect";
+        input.style.borderColor = "#e74c3c";
+      }
+    }
+
+    const result = document.getElementById("result");
+    result.textContent = "Resultado: " + score + " de " + total + " correctas.";
+
+    if (score === total) {
+      result.className = "success";
+    } else if (score >= Math.ceil(total / 2)) {
+      result.className = "partial";
+    } else {
+      result.className = "fail";
+    }
+  }
+
+  function resetQuiz() {
+    for (const id of Object.keys(answers)) {
+      const input = document.getElementById(id);
+      const fb = document.getElementById("fb" + id.slice(1));
+      input.value = "";
+      input.style.borderColor = "#dce1e8";
+      fb.textContent = "";
+      fb.className = "feedback";
+    }
+    const result = document.getElementById("result");
+    result.textContent = "";
+    result.className = "";
+    result.style.display = "none";
+  }
+</script>
+
+</body>
+</html>
